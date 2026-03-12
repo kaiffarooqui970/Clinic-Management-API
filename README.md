@@ -4,29 +4,33 @@
 ![Django](https://img.shields.io/badge/Django-REST_API-092E20?style=for-the-badge&logo=django)
 ![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge&logo=sqlite)
 
-A robust backend REST API built to manage clinic operations, handle patient registration, and safely schedule appointments. This system features strict data integrity checks to prevent scheduling conflicts and double-bookings.
+A robust backend REST API built to manage clinic operations, handle patient registration, and safely schedule appointments. This system features strict programmatic data integrity checks to prevent scheduling conflicts and double-bookings.
 
 ---
 
-## ✨ Features
-* **Patient Registration:** Securely register new patients and automatically generate unique Patient IDs.
-* **Appointment Scheduling:** Book appointments linked directly to specific patients.
-* **Data Integrity Protocol:** Programmatic safety checks that block double-booking by verifying calendar availability before saving to the database.
-* **Admin Dashboard:** Fully integrated Django Admin panel for visual data management.
+## 🏗️ System Architecture & Data Flow
 
----
+Below is the sequence diagram illustrating the backend logic used to enforce data integrity during the appointment booking process.
 
-## 🚀 Tech Stack
-* **Language:** Python 3
-* **Framework:** Django 
-* **Database:** SQLite3
-* **Testing:** Thunder Client / Postman
+```mermaid
+sequenceDiagram
+    participant Client as REST Client
+    participant API as Django Router
+    participant View as views.py
+    participant DB as SQLite Database
 
----
-
-## ⚙️ Local Installation & Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/kaiffarooqui970/Clinic-Management-API.git](https://github.com/kaiffarooqui970/Clinic-Management-API.git)
-   cd Clinic-Management-API
+    Client->>API: POST /api/book/ (ID, Time)
+    API->>View: Route Request
+    View->>DB: Check if Patient Exists?
+    DB-->>View: Returns Status
+    View->>DB: Check if Time Slot is Taken?
+    
+    alt Time Slot Taken
+        DB-->>View: Slot Exists
+        View-->>Client: 409 Conflict (Error)
+    else Time Slot Free
+        DB-->>View: Slot Available
+        View->>DB: Create Appointment
+        DB-->>View: Save Confirmation
+        View-->>Client: 201 Created (Success)
+    end
