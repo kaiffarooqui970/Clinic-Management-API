@@ -16,7 +16,6 @@ This system is built using **Third Normal Form (3NF)** relational database princ
 * **Referential Integrity:** Utilizes `ForeignKey` (One-to-Many) and `OneToOneField` (One-to-One) relationships with `CASCADE` deletion to prevent orphaned data.
 * **Data Aggregation:** Features a unified history endpoint that joins data across multiple transactional tables (Medical, Prescription, Billing) into a single JSON payload.
 
-*(Include your UML Class Diagram image here!)*
 
 ---
 
